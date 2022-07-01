@@ -2,7 +2,8 @@ from typing import Iterator
 from rest_framework.views import APIView
 from rest_framework.request import HttpRequest
 from rest_framework.response import Response
-from TeamWaveAssignment.settings import API_URL
+from TeamWaveAssignment.settings import API_URL, API_KEY
+import requests
 
 
 class SearchAPIView(APIView):
@@ -30,5 +31,7 @@ class SearchAPIView(APIView):
             request_url += "order=desc&"
         if "sort" not in request.GET:
             request_url += "sort=activity&"
+        request_url += f"key={API_KEY}&"
         request_url += "site=stackoverflow"
-        return Response({"message": request_url})
+        response = requests.get(request_url)
+        return Response(response.json())

@@ -73,6 +73,7 @@ TEMPLATES = [
 
 API_URL = "https://api.stackexchange.com/2.3/search"
 
+API_KEY = os.environ.get("API_KEY")
 
 WSGI_APPLICATION = "TeamWaveAssignment.wsgi.application"
 
