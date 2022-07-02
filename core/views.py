@@ -1,5 +1,5 @@
 from typing import Iterator
-from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.request import HttpRequest
 from rest_framework.response import Response
 from django.views.decorators.cache import cache_page
@@ -8,7 +8,7 @@ from TeamWaveAssignment.settings import API_URL, API_KEY
 import requests
 
 
-class SearchAPIView(APIView):
+class SearchAPIView(ListAPIView):
     SEARCH_PARAMS = [
         "page",
         "todate",
@@ -39,10 +39,10 @@ class SearchAPIView(APIView):
         request_url += "site=stackoverflow"
 
         return request_url
-
+    
     @method_decorator(cache_page(60 * 60 * 2))
-    def get(self, request: HttpRequest):
-        
+    def list(self, request: HttpRequest): 
+
         request_url = self.generate_ulr(query_dict=request.GET)
         response = requests.get(request_url)
         return Response(data=response.json(), status=response.status_code)
