@@ -44,7 +44,6 @@ class SearchAPIView(ListAPIView):
         return request_url
 
     @method_decorator(cache_page(60 * 60 * 2))
-    @decorator_from_middleware(RequestThrottle)
     def list(self, request: Request):
         request_url = self.generate_ulr(query_dict=request.GET)
         response = requests.get(request_url)
