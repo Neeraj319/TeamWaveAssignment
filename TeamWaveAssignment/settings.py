@@ -55,6 +55,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "TeamWaveAssignment.urls"
 
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -90,17 +91,13 @@ DATABASES = {
 
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://redis:6379',
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://redis:6379",
     }
 }
 
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 100
-}
-
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
