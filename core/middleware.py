@@ -9,10 +9,10 @@ class RequestThrottle(MiddlewareMixin):
         redis_client = redis.from_url("redis://redis:6379")
         session = request.session
         session_key = session._SessionBase__session_key
-
         if not (request.environ["PATH_INFO"]) == "/search":
             return None
         if session_key is None:
+            request.session.create()
             return self.get_response(request)
         key_name = "_request_in_day"
 
