@@ -14,6 +14,9 @@ const fetchFromAPI = async (url) => {
                 alert("Bad Gateway")
                 return;
             }
+            if (response.status == 403) {
+                alert(await response.text())
+            }
             alert("invalid search parameters")
             return;
         }
