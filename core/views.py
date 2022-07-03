@@ -1,4 +1,5 @@
 from typing import Iterator
+from django.shortcuts import render
 from rest_framework.generics import ListAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -6,7 +7,6 @@ from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 from TeamWaveAssignment.settings import API_URL, API_KEY
 import requests
-from core.middleware import RequestThrottle
 from django.utils.decorators import decorator_from_middleware
 
 
@@ -60,12 +60,22 @@ class SearchAPIView(ListAPIView):
                 data["prev"] = self.generate_ulr(query_dict=fake_query_dict)
         return data
 
-    @method_decorator(cache_page(60 * 60 * 2))
+    # @method_decorator(cache_page(60 * 60 * 2))
     def list(self, request: Request):
-        request_url = self.generate_ulr(query_dict=request.GET)
-        response = requests.get(request_url)
-        data = response.json()
-        if response.status_code == 200:
-            if page_no := request.GET.get("page"):
-                data = self.create_pagination(data, request.GET, page_no)
-        return Response(data=data, status=response.status_code)
+        # request_url = self.generate_ulr(query_dict=request.GET)
+        # response = requests.get(request_url)
+        # data = response.json()
+        # if response.status_code == 200:
+        #     if page_no := request.GET.get("page"):
+        #         data = self.create_pagination(data, request.GET, page_no)
+        return Response(
+            # data=data,
+            # status=response.status_code,
+            headers={
+                "Set-Cookie": f"sessionid={request.session._SessionBase__session_key}",
+            },
+        )
+
+
+def search(request):
+    return render(request, "index.html")
