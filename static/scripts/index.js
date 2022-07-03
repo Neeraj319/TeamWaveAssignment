@@ -8,17 +8,6 @@ const btn = document.querySelector('button');
 let url = "http://localhost:8000/search?"
 const data = {}
 
-const getCookie = (name) => {
-    name = name + "=";
-    const cDecoded = decodeURIComponent(document.cookie); //to be careful
-    const cArr = cDecoded.split(';');
-    let res;
-    cArr.forEach(val => {
-        if (val.indexOf(name) === 0) res = val.substring(name.length);
-    })
-    return res
-}
-
 
 btn.addEventListener('click', async (e) => {
     e.preventDefault()
@@ -51,4 +40,3 @@ btn.addEventListener('click', async (e) => {
     }
 });
 
-export default getCookie;

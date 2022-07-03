@@ -1,5 +1,3 @@
-import getCookie from "./index.js";
-
 
 const fetchFromAPI = async (url) => {
     let response;
