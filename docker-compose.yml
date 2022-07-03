@@ -1,13 +1,5 @@
 version: "3.9"
 services:
-  frontend:
-    build: ./Frontend/
-    volumes:
-      - ./Frontend:/frontend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - app
   app:
     build: .
     env_file:
