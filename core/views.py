@@ -60,17 +60,17 @@ class SearchAPIView(ListAPIView):
                 data["prev"] = self.generate_ulr(query_dict=fake_query_dict)
         return data
 
-    # @method_decorator(cache_page(60 * 60 * 2))
+    @method_decorator(cache_page(60 * 60 * 2))
     def list(self, request: Request):
-        # request_url = self.generate_ulr(query_dict=request.GET)
-        # response = requests.get(request_url)
-        # data = response.json()
-        # if response.status_code == 200:
-        #     if page_no := request.GET.get("page"):
-        #         data = self.create_pagination(data, request.GET, page_no)
+        request_url = self.generate_ulr(query_dict=request.GET)
+        response = requests.get(request_url)
+        data = response.json()
+        if response.status_code == 200:
+            if page_no := request.GET.get("page"):
+                data = self.create_pagination(data, request.GET, page_no)
         return Response(
-            # data=data,
-            # status=response.status_code,
+            data=data,
+            status=response.status_code,
             headers={
                 "Set-Cookie": f"sessionid={request.session._SessionBase__session_key}",
             },
