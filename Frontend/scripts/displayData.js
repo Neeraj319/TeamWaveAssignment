@@ -1,5 +1,6 @@
+import fetchFromAPI from "./fetchData.js";
+
 const container_div = document.querySelector('.container');
-const form = document.querySelector('form')
 
 const createTableHead = () => {
     let table = document.createElement('table')
@@ -27,26 +28,64 @@ const createTableHead = () => {
 }
 
 
-const createPagination = () => {
+const createPagination = (paginate) => {
+    if (paginate.type === "next") {
+        const btn = document.createElement('button')
+        btn.classList.add('btn', 'btn-dark', "my-2")
+        btn.innerText = 'Next'
+        btn.classList.add("float-end")
+        container_div.appendChild(btn)
+        btn.addEventListener('click', async () => {
+            let dataFromAPI = (await fetchFromAPI(paginate.url));
+            if (dataFromAPI) {
+                displayData(dataFromAPI)
+            }
+        }
+        )
+    }
+    if (paginate.type === "prev") {
+        const btn = document.createElement('button')
+        btn.classList.add('btn', 'btn-warning', "my-2")
+        btn.innerText = 'Previous'
+        btn.classList.add("float-start")
+        container_div.appendChild(btn)
+        btn.addEventListener('click', async () => {
+            let dataFromAPI = (await fetchFromAPI(paginate.url));
+            if (dataFromAPI) {
+                displayData(dataFromAPI)
+            }
+        }
+        )
+    }
+
+}
+
+const createGotToHomePage = () => {
     const btn = document.createElement('button')
-    btn.classList.add('btn', 'btn-primary')
-    btn.innerText = 'Next'
-}
-
-const searchAgain = () => {
-    const searchAgain = document.createElement('button')
-    searchAgain.classList.add('btn', 'btn-success')
-    searchAgain.innerText = 'Search Again'
-    searchAgain.addEventListener('click', () => {
+    btn.classList.add('btn', 'btn-primary', "my-2")
+    btn.innerText = 'Go to Home Page'
+    btn.classList.add("float-end")
+    container_div.appendChild(btn)
+    btn.addEventListener('click', () => {
         window.location.href = "/"
-    })
-    container_div.appendChild(searchAgain)
-    container_div.appendChild(document.createElement('br'))
-
+    }
+    )
 }
-const displayData = (data) => {
-    container_div.removeChild(form)
-    searchAgain()
+
+
+const displayData = (response_data) => {
+    let data = response_data.items
+    if (container_div.childNodes.length > 4) {
+        let child = container_div.lastElementChild;
+        while (child) {
+            if (container_div.childNodes.length <= 4) {
+                break;
+            }
+            container_div.removeChild(child);
+            child = container_div.lastElementChild;
+        }
+    }
+    createGotToHomePage()
     let table = createTableHead()
     container_div.appendChild(table)
     let t_body = document.createElement('tbody')
@@ -62,5 +101,11 @@ const displayData = (data) => {
         count++;
     }
     table.appendChild(t_body)
+    if (response_data['next']) {
+        createPagination({ type: "next", url: response_data['next'] })
+    }
+    if (response_data['prev']) {
+        createPagination({ type: "prev", url: response_data['prev'] })
+    }
 }
 export default displayData;

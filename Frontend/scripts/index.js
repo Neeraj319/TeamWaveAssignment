@@ -8,6 +8,7 @@ const btn = document.querySelector('button');
 let url = "http://localhost:8000/search?"
 const data = {}
 
+
 btn.addEventListener('click', async (e) => {
     e.preventDefault()
 
@@ -34,5 +35,7 @@ btn.addEventListener('click', async (e) => {
     url = url.slice(0, -1)
 
     let dataFromAPI = (await fetchFromAPI(url));
-    displayData(dataFromAPI.items)
+    if (dataFromAPI) {
+        displayData(dataFromAPI)
+    }
 });
