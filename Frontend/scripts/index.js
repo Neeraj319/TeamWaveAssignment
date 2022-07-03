@@ -1,4 +1,7 @@
 import fetchFromAPI from "./fetchData.js";
+import displayData from "./displayData.js";
+
+
 const form = document.querySelector('form');
 const tagged = document.querySelector('.tagged');
 const btn = document.querySelector('button');
@@ -29,5 +32,7 @@ btn.addEventListener('click', async (e) => {
         url += `${key}=${data[key]}&`
     }
     url = url.slice(0, -1)
-    console.log(await fetchFromAPI(url));
+
+    let dataFromAPI = (await fetchFromAPI(url));
+    displayData(dataFromAPI.items)
 });
