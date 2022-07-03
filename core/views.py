@@ -31,7 +31,7 @@ class SearchAPIView(ListAPIView):
 
         for param, value in query_items:
             if param in self.SEARCH_PARAMS:
-                request_url += param + "=" + value + "&"
+                request_url += (param) + "=" + str(value) + "&"
 
         if "order" not in query_dict:
             request_url += "order=desc&"
@@ -43,8 +43,29 @@ class SearchAPIView(ListAPIView):
 
         return request_url
 
+    def create_pagination(self, data, query_dict, page_no):
+        page_no = int(page_no)
+
+        if page_no >= 1:
+            fake_query_dict = dict()
+            for param, value in query_dict.items():
+                fake_query_dict[param] = value
+            fake_query_dict["page"] = page_no + 1
+            next_url = self.generate_ulr(query_dict=fake_query_dict)
+
+            if requests.get(next_url).status_code == 200:
+                data["next"] = next_url
+            fake_query_dict["page"] = page_no - 1
+            if not page_no == 1:
+                data["prev"] = self.generate_ulr(query_dict=fake_query_dict)
+        return data
+
     @method_decorator(cache_page(60 * 60 * 2))
     def list(self, request: Request):
         request_url = self.generate_ulr(query_dict=request.GET)
         response = requests.get(request_url)
-        return Response(data=response.json(), status=response.status_code)
+        data = response.json()
+        if response.status_code == 200:
+            if page_no := request.GET.get("page"):
+                data = self.create_pagination(data, request.GET, page_no)
+        return Response(data=data, status=response.status_code)
