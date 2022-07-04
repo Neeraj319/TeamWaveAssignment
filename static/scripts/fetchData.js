@@ -14,6 +14,7 @@ const fetchFromAPI = async (url) => {
             }
             if (response.status == 403) {
                 alert(await response.text())
+                return;
             }
             alert("invalid search parameters")
             return;
