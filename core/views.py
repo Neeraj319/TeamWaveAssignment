@@ -79,7 +79,22 @@ class SearchAPIView(ListAPIView):
     def list(self, request: Request) -> Response:
 
         """
-        returns all the data from the stack exchange api based on the query params
+        returns all the data from the stack exchange api based on the query parameters\n
+        include the following parameters:\n
+        SEARCH_PARAMS = {
+        "page": int,
+        "todate": int,
+        "max": int,
+        "nottagged": str,
+        "pagesize": int,
+        "intitle": int,
+        "fromdate": int,
+        "min": int,
+        "tagged": str,
+        "order": str,
+        "sort": str,
+        }
+
         """
 
         request_url = self.generate_ulr(query_dict=request.GET)
