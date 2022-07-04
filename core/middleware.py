@@ -2,6 +2,7 @@ import redis
 from django.utils.deprecation import MiddlewareMixin
 from django.http import HttpResponseForbidden
 from rest_framework.request import Request
+import os
 
 
 class RequestThrottle(MiddlewareMixin):
@@ -10,7 +11,9 @@ class RequestThrottle(MiddlewareMixin):
     """
 
     def process_request(self, request: Request) -> Request:
-        redis_client = redis.from_url("redis://redis:6379")
+        redis_client = redis.from_url(
+            f"redis://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}"
+        )
         session = request.session
         session_key = session._SessionBase__session_key
         if (
