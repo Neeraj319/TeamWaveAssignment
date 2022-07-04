@@ -24,7 +24,12 @@ class SearchAPIView(ListAPIView):
         "sort",
     ]
 
-    def generate_ulr(self, query_dict):
+    def generate_ulr(self, query_dict) -> str:
+        """
+        generates url for the stack exchange api based on the query parameters
+        just to make sure that other parameters are not passed to the api
+        some checks are added to make sure that the parameters are valid
+        """
         request_url = API_URL + "?"
         query_items: Iterator = query_dict.items()
 
@@ -42,8 +47,14 @@ class SearchAPIView(ListAPIView):
 
         return request_url
 
-    def create_pagination(self, data, query_dict, page_no):
-        page_no = int(page_no)
+    def create_pagination(self, data: dict, query_dict: dict, page_no: int) -> dict:
+        """
+        since the stack exchange api doesn't support pagination, we have to create it ourselves
+        since we need to check if the next page exists or not we have to send a request to the
+        stack exchange api and check if the page is there this makes our own api really slow
+        and the response is not cached too so this is a bad idea and considered as an optional
+        feature
+        """
 
         if page_no >= 1:
             fake_query_dict = dict()
@@ -65,14 +76,19 @@ class SearchAPIView(ListAPIView):
         return data
 
     @method_decorator(cache_page(60 * 60 * 2))
-    def list(self, request: Request):
+    def list(self, request: Request) -> Response:
+
+        """
+        returns all the data from the stack exchange api based on the query params
+        """
+
         request_url = self.generate_ulr(query_dict=request.GET)
         response = requests.get(request_url)
         data = response.json()
         if response.status_code == 200:
             if CREATE_PAGINATION:
                 if page_no := request.GET.get("page"):
-                    data = self.create_pagination(data, request.GET, page_no)
+                    data = self.create_pagination(data, request.GET, int(page_no))
         return Response(
             data=data,
             status=response.status_code,
@@ -82,5 +98,8 @@ class SearchAPIView(ListAPIView):
         )
 
 
-def search(request):
+def search(request: Request) -> Response:
+    """
+    plain home page of the site
+    """
     return render(request, "index.html")
