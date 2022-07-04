@@ -5,9 +5,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
-from TeamWaveAssignment.settings import API_URL, API_KEY
+from TeamWaveAssignment.settings import API_URL, API_KEY, CREATE_PAGINATION
 import requests
-from django.utils.decorators import decorator_from_middleware
 
 
 class SearchAPIView(ListAPIView):
@@ -51,13 +50,18 @@ class SearchAPIView(ListAPIView):
             for param, value in query_dict.items():
                 fake_query_dict[param] = value
             fake_query_dict["page"] = page_no + 1
-            next_url = self.generate_ulr(query_dict=fake_query_dict)
-
+            next_url = self.generate_ulr(query_dict=fake_query_dict).replace(
+                "https://api.stackexchange.com/2.3/search?",
+                "http://localhost:8000/search?",
+            )
             if requests.get(next_url).status_code == 200:
                 data["next"] = next_url
             fake_query_dict["page"] = page_no - 1
             if not page_no == 1:
-                data["prev"] = self.generate_ulr(query_dict=fake_query_dict)
+                data["prev"] = self.generate_ulr(query_dict=fake_query_dict).replace(
+                    "https://api.stackexchange.com/2.3/search?",
+                    "http://localhost:8000/search?",
+                )
         return data
 
     @method_decorator(cache_page(60 * 60 * 2))
@@ -66,8 +70,9 @@ class SearchAPIView(ListAPIView):
         response = requests.get(request_url)
         data = response.json()
         if response.status_code == 200:
-            if page_no := request.GET.get("page"):
-                data = self.create_pagination(data, request.GET, page_no)
+            if CREATE_PAGINATION:
+                if page_no := request.GET.get("page"):
+                    data = self.create_pagination(data, request.GET, page_no)
         return Response(
             data=data,
             status=response.status_code,
